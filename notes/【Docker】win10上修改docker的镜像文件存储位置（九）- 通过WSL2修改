@@ -1,0 +1,60 @@
+【Docker】win10上修改docker的镜像文件存储位置（九）- 通过WSL2修改
+https://blog.csdn.net/u013948858/article/details/111464534
+
+【Docker】win10上修改docker的镜像文件存储位置（九）- 通过WSL2修改
+
+jwensh 2020-12-20 23:56:46  670  收藏 6
+分类专栏： Docker 文章标签： wsl docker
+版权
+闲话少说
+
+软件版本
+window 10 v1909 小版本号
+
+Docker Desktop Installer v20.10.0（ 细致版本看下图）
+安装过程所遇
+官网下载的docker.exe直接安装即可，安装中间选项，直接安装的C盘下（C:\Program Files\Docker），由上面的docker info可看出，docker的默认路径（/var/lib/docker）跟linux一样了，与window的之前docker版本不一样了，这是为什么？
+点击安装的docker icon,启动桌面，会提示安装WSL（这是啥，这里就不赘述了），安装提示安装即可，版本是WSL2，如果不安装，启动不了docker engine服务，当然也可以不使用这个，如下图，设置中有选项，可尝试，让后再修改试试看，不过我建议按默认的来，官网推荐；
+
+目前的docker版本依附WSL来进行文件映射，所以，我们需要通过wsl来修改docker的文件映射路径，可理解为文件挂载
+使用WSL修改docker文件存储位置
+WSL2模式下docker-desktop-data vm磁盘映像通常位于以下位置：C:\Users\jayzhen\AppData\Local\Docker\wsl\data\ext4.vhdx按照以下说明将其重新定位到其他驱动器/目录，并保留所有现有的Docker数据。
+
+首先，右键单击Docker Desktop图标关闭Docker桌面，然后选择退出Docker桌面，然后，打开命令提示符：
+wsl --list -v
+1
+您应该能够看到，确保两个状态都已停止。
+
+默认情况下，Docker Desktop for Window会创建如下两个发行版（distro) C:\Users\jayzhen\AppData\Local\Docker\wsl
+docker-desktop (对应distro/ext4.vhdx)
+docker-desktop-data （对应data/ext4.vhdx）
+按官网提示：vhdx文件最大支持256G，超出大小会有异常。当然我的C盘也没那么大官方说明
+
+将docker-desktop-data导出到文件中(备份image及相关文件)，使用如下命令
+wsl --export docker-desktop-data "D:\\docker-desktop-data.tar"
+1
+从wsl取消注册docker-desktop-data，请注意C:\Users\jayzhen\AppData\Local\Docker\wsl\data\ext4.vhdx文件将被自动删除。
+wsl --unregister docker-desktop-data
+1
+将导出的docker-desktop-data再导入回wsl，并设置我们想要的路径，即新的镜像及各种docker使用的文件的挂载目录，我这里设置到D:\\docker\\wsl
+wsl --import docker-desktop-data "D:\\docker\\wsl" "D:\\docker-desktop-data.tar" --version 2
+1
+命令执行完毕，就能再目录下看到文件了，这时次启动Docker Desktop，可以正常工作了
+如何验证有效
+修改前记录 C:\Users\jayzhen\AppData\Local\Docker\wsl目录文件大小（大于2G）
+修改后，在记录其文件大小（小于200M）和D:\\docker\\wsl（1.47G），然后docker pull任意一个镜像（我下载了nginx、tomcat），再看C:\Users\jayzhen\AppData\Local\Docker\wsl目录无变化，而D:\\docker\\wsl增大到2.26G
+
+
+最后，如果在验证后一切没有问题，则可以删除D:\\docker-desktop-data.tar文件，记住可不是ext4.vhdx文件，这可是重要文件
+
+参考资料
+什么是Linux的Windows子系统？
+扩展WSL 2虚拟硬盘的大小
+在WSL 2上开始使用Docker远程容器
+Docker桌面WSL 2后端简介
+移动Docker wsl文件
+运行Windows和WSL时Docker卷位于何处？
+在Windows 10 Home中使用WSL2时如何更改docker映像的位置？
+————————————————
+版权声明：本文为CSDN博主「jwensh」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/u013948858/article/details/111464534
