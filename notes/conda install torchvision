@@ -1,0 +1,86 @@
+https://blog.csdn.net/amateur_hy/article/details/90716411
+Linux系统下利用anaconda创建虚拟环境并安装pytorch0.4.1和torchvision
+
+amateur_hy 2019-06-03 10:14:30  8138  收藏 16
+版权
+学习需要，搭建基于以下环境配置的深度学习框架，在此主要记录利用anaconda创建虚拟环境并安装pytorch0.4.1和torchvision的过程。
+Linux系统版本为18.04。
+
+参考：使用anaconda创建虚拟环境安装不同深度学习框架 https://blog.csdn.net/weixin_40100431/article/details/82116171
+Ubuntu16.04+CUDA9.0安装pytorch0.4.1填坑记录 https://blog.csdn.net/fzu_11140835/article/details/86553386
+
+创建并进入虚拟环境
+·创建虚拟环境
+
+conda create -n pytorch35 pip python=3.5
+1
+以上命令在创建虚拟环境的同时，安装了python3.5。
+
+·进入虚拟环境
+
+source activate pytorch35
+1
+或
+
+conda activate pytorch35
+1
+其中，pytorch35为自定义的虚拟环境名称。
+
+配置虚拟环境
+1.安装cuda和cudnn
+conda install cudnn=7.1.2
+1
+通过以上命令安装cudnn，会同时自动安装依赖项 cuda。
+
+2.安装pytorch和torchvision
+如果安装最新版本的pytorch和torchvision可直接在pytorch官网的Start Locally上，根据系统配置选择，按照官网给出的命令，完成安装。
+
+
+conda install pytorch torchvision cudatoolkit=9.0 -c pytorch
+1
+利用以上命令，可同时安装PyTorch和torchvision，但PyTorch的版本为1.1，而所需PyTorch版本为0.4.1，因此不能采用以上命令进行配置，而是要分别安装PyTorch 0.4.1和torchvision。
+
+pytorch官网提供了previous versions of PyTorch安装选项，可根据需求进行安装。
+
+·安装pytorch 0.4.1
+
+conda install pytorch=0.4.1 cuda90 -c pytorch
+1
+以上是cuda9.0版本的安装命令。
+
+·安装torchvision
+
+conda install torchvision
+1
+其他需要的包，均可以通过pip进行安装，不赘述。
+至此完成了环境的配置。
+
+测试
+在虚拟环境里启动python并进行测试，即通过以下命令测试是否可以正常导入库和包。
+
+import torch
+import torchvision
+import cv2
+import numpy
+import matplotlib
+import dominate
+import random
+import collections
+import shutil
+1
+2
+3
+4
+5
+6
+7
+8
+9
+如果没有报错，如下图，则环境配置成功。
+
+‘’’
+请大家多多指教 orz
+‘’’
+————————————————
+版权声明：本文为CSDN博主「amateur_hy」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/amateur_hy/article/details/90716411
